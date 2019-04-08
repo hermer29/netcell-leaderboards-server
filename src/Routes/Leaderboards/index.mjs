@@ -47,3 +47,41 @@ leaderboardsRoute.route('/:leaderboardName')
 			res.status(500).send({ error });
 		}
 	});
+
+leaderboardsRoute.route('/:leaderboardName/users')
+	.get(async (req, res) => {
+		const {
+			leaderboardName,
+		} = req.params;
+		const {
+			startTime,
+			endTime,
+		} = req.query;
+		try {
+			const users = await Score.getUsers(leaderboardName, startTime, endTime);
+			res.status(200).send(users);
+		} catch(error) {
+			res.status(500).send({ error });
+		}
+	});
+	// .post(authMiddleware, async (req, res) => {
+	// 	const {
+	// 		params: {
+	// 			leaderboardName,
+	// 		},
+	// 		body: {
+	// 			score,
+	// 		},
+	// 		user,
+	// 	} = req;
+	// 	try {
+	// 		const result = await Score.create({
+	// 			score,
+	// 			user: user._id,
+	// 			leaderboard: leaderboardName,
+	// 		});
+	// 		res.status(200).send(result);
+	// 	} catch(error) {
+	// 		res.status(500).send({ error });
+	// 	}
+	// });

@@ -16,10 +16,13 @@ const PASSWORD = 'test_password';
 const LEADERBOARD_NAME = 'test_leaderboard';
 
 const agent = request.agent(app);
+let startTime;
 
 beforeAll(async () => {
 	await db_connected;
 	await mongoose.connection.db.dropDatabase();
+
+	startTime = Date.now();
 
 	await agent
 		.post('/auth/register')
@@ -99,6 +102,20 @@ test('Update lower score', async () => {
 	const userScore = _.find(leaderboard, { username: USERNAME });
 	expect(userScore).toBeDefined();
 	expect(userScore.score).toBe(2);
+});
+
+test('Get users', async () => {
+	const response = await agent
+		.get(`/leaderboards/${LEADERBOARD_NAME}/users?startTime=${startTime}&endTime=${Date.now()}`)
+		.send()
+		.expect(200);
+	
+	const users = response.body;
+	expect(users).toBeInstanceOf(Array);
+	expect(users.length).toBe(1);
+
+	const user = users[0];
+	expect(user).toHaveProperty('username', USERNAME);
 });
 
 afterAll(async () => {
