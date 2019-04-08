@@ -16,7 +16,7 @@ const USERNAME = 'test_username';
 const PASSWORD = 'test_password';
 const LEADERBOARD_NAME = 'test_leaderboard';
 
-let agent = request.agent(app);
+let agent;
 let startTime;
 
 beforeAll(async () => {
@@ -25,12 +25,69 @@ beforeAll(async () => {
 	await createAdminUser();
 
 	startTime = Date.now();
+
+	await request(app)
+		.post('/auth/register')
+		.send({
+			username: USERNAME,
+			password: PASSWORD,
+		});
+});
+
+describe('Protected public API', () => {
+	test('Protected get leaderboard list', async () => {
+		await request(app)
+			.get('/leaderboards')
+			.expect(403);
+	});
+	
+	test('Protected create score', async () => {
+		await request(app)
+			.post(`/leaderboards/${LEADERBOARD_NAME}`)
+			.send({
+				score: 1
+			})
+			.expect(403);
+	});
+});
+
+describe('Protected admin API', () => {
+	beforeAll(async () => {
+		agent = request.agent(app);
+		await agent
+			.post('/auth/login')
+			.send({
+				username: USERNAME,
+				password: PASSWORD,
+			});
+	});
+
+	test('Protected listing users', async () => {
+		await agent
+			.get(`/leaderboards/${LEADERBOARD_NAME}/users`)
+			.expect(403);
+	});
+	
+	test('Protected delete user score', async () => {
+		await agent
+			.delete(`/leaderboards/${LEADERBOARD_NAME}/users/${USERNAME}`)
+			.send()
+			.expect(403);
+	});
+
+	test('Protected counting user actions', async () => {
+		await agent
+			.delete(`/leaderboards/${LEADERBOARD_NAME}/userActions/${USERNAME}`)
+			.send()
+			.expect(403);
+	});
 });
 
 describe('Public API', () => {
 	beforeAll(async () => {
+		agent = request.agent(app);
 		await agent
-			.post('/auth/register')
+			.post('/auth/login')
 			.send({
 				username: USERNAME,
 				password: PASSWORD,
@@ -112,6 +169,7 @@ describe('Public API', () => {
 
 describe('Admin', () => {
 	beforeAll(async () => {
+		agent = request.agent(app);
 		await agent
 			.post('/auth/login')
 			.send({
