@@ -1,6 +1,7 @@
 import express from 'express';
 import Score from '../../Models/Score.mjs';
 import { authMiddleware } from '../Auth/authMiddleware.mjs';
+import { adminMiddleware } from '../Auth/authMiddleware.mjs';
 
 export const leaderboardsRoute = express.Router();
 
@@ -49,7 +50,7 @@ leaderboardsRoute.route('/:leaderboardName')
 	});
 
 leaderboardsRoute.route('/:leaderboardName/users')
-	.get(async (req, res) => {
+	.get(adminMiddleware, async (req, res) => {
 		const {
 			leaderboardName,
 		} = req.params;
