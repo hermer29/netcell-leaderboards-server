@@ -1,7 +1,7 @@
 import express from 'express';
 import Score from '../../Models/Score.mjs';
 import { authMiddleware } from '../Auth/authMiddleware.mjs';
-import { broadcast } from '../../websocket';
+import { broadcast } from '../../websocket.mjs';
 
 export const leaderboardsPublicRoute = express.Router();
 

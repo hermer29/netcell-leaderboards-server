@@ -8,7 +8,7 @@ import { app } from '../../app.mjs';
 import { leaderboardsRoute } from './index.mjs';
 import { authRoute } from '../Auth/index.mjs';
 import { createAdminUser } from '../Auth/authMiddleware.mjs';
-import * as websocket from '../../websocket';
+import * as websocket from '../../websocket.mjs';
 
 jest.mock('../../websocket');
 
