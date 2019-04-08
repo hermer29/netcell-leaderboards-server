@@ -19,3 +19,11 @@ export const createAdminUser = async () => {
 		// console.warn(err);
 	}
 };
+
+export const adminMiddleware = (req, res, next) => {
+	if (req.isAuthenticated() && req.user.username == process.env.ADMIN_USERNAME) {
+		return next();
+	} else {
+		res.status(403).send();
+	}
+};
