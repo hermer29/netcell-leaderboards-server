@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import '../../db_test';
+import db_connected from  '../../db_test';
 
 import request from 'supertest';
 import mongoose from 'mongoose';
@@ -11,54 +11,59 @@ app.use('/auth', authRoute);
 const USERNAME = 'test_unregistered';
 const PASSWORD = 'test_unregistered';
 
+beforeAll(async () => {
+	await db_connected;
+	await mongoose.connection.db.dropDatabase();
+});
+
 test('Prevent unregistered user login', async () => {
-	const response = await request(app)
+	await request(app)
 		.post('/auth/login')
 		.send({
 			username: USERNAME,
 			password: PASSWORD,
-		});
-	expect(response.statusCode).toBe(403);
+		})
+		.expect(403);
 });
 
 test('Register new user', async () => {
-	const response = await request(app)
+	await request(app)
 		.post('/auth/register')
 		.send({
 			username: USERNAME,
 			password: PASSWORD,
-		});
-	expect(response.statusCode).toBe(200);
+		})
+		.expect(200);
 });
 
 test('Prevent register same username', async () => {
-	const response = await request(app)
+	await request(app)
 		.post('/auth/register')
 		.send({
 			username: USERNAME,
 			password: PASSWORD,
-		});
-	expect(response.statusCode).toBe(403);
+		})
+		.expect(403);
 });
 
 test('Login new user', async () => {
-	const response = await request(app)
+	await request(app)
 		.post('/auth/login')
 		.send({
 			username: USERNAME,
 			password: PASSWORD,
-		});
-	expect(response.statusCode).toBe(200);
+		})
+		.expect(200);
 });
 
 test('Prevent login wrong password', async () => {
-	const response = await request(app)
+	await request(app)
 		.post('/auth/login')
 		.send({
 			username: USERNAME,
 			password: PASSWORD + 'wrong',
-		});
-	expect(response.statusCode).toBe(403);
+		})
+		.expect(403);
 });
 
 afterAll(async () => {
