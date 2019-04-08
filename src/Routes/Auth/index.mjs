@@ -48,11 +48,12 @@ authRoute.post('/login', async (req, res) => {
 authRoute.post('/register', async (req, res) => {
 	const {
 		username,
-		password
+		password,
+		displayName
 	} = req.body;
 	const user = new User({
 		username,
-		displayName: username,
+		displayName: displayName || username,
 	});
 	try {
 		await User.register(user, password);
