@@ -14,5 +14,4 @@ User.plugin(passportLocalMongoose, {
 	missingPasswordError: 'Wrong password'
 });
 
-
 export default mongoose.model('User', User);
