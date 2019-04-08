@@ -27,13 +27,21 @@ test('Prevent unregistered user login', async () => {
 });
 
 test('Register new user', async () => {
-	await request(app)
+	const agent = request.agent(app);
+	await agent
 		.post('/auth/register')
 		.send({
 			username: USERNAME,
 			password: PASSWORD,
 		})
 		.expect(200);
+
+	const response = await agent
+		.get('/auth/profile')
+		.expect(200);
+	const profile = response.body;
+	expect(profile).toHaveProperty('username', USERNAME);
+	expect(profile).toHaveProperty('displayName', USERNAME);
 });
 
 test('Prevent register same username', async () => {
@@ -47,13 +55,21 @@ test('Prevent register same username', async () => {
 });
 
 test('Login new user', async () => {
-	await request(app)
+	const agent = request.agent(app);
+	await agent
 		.post('/auth/login')
 		.send({
 			username: USERNAME,
 			password: PASSWORD,
 		})
 		.expect(200);
+
+	const response = await agent
+		.get('/auth/profile')
+		.expect(200);
+	const profile = response.body;
+	expect(profile).toHaveProperty('username', USERNAME);
+	expect(profile).toHaveProperty('displayName', USERNAME);
 });
 
 test('Prevent login wrong password', async () => {
@@ -64,6 +80,31 @@ test('Prevent login wrong password', async () => {
 			password: PASSWORD + 'wrong',
 		})
 		.expect(403);
+});
+
+test('Change display name', async () => {
+	const agent = request.agent(app);
+	await agent
+		.post('/auth/login')
+		.send({
+			username: USERNAME,
+			password: PASSWORD,
+		})
+		.expect(200);
+
+	await agent
+		.patch('/auth/profile')
+		.send({
+			displayName: USERNAME + 'changed'
+		})
+		.expect(200);
+
+	const response = await agent
+		.get('/auth/profile')
+		.expect(200);
+	const profile = response.body;
+	expect(profile).toHaveProperty('username', USERNAME);
+	expect(profile).toHaveProperty('displayName', USERNAME + 'changed');
 });
 
 afterAll(async () => {

@@ -1,5 +1,6 @@
 import express from 'express';
 import User from '../../Models/User.mjs';
+import { authMiddleware } from './authMiddleware.mjs';
 
 export const authRoute = express.Router();
 
@@ -63,3 +64,34 @@ authRoute.post('/register', async (req, res) => {
 		});
 	}
 });
+
+authRoute.route('/profile')
+	.get(authMiddleware, async (req, res) => {
+		try {
+			const user = await User.findById(req.user.id);
+			res.status(200).send({
+				username: user.username,
+				displayName: user.displayName,
+			});
+		} catch(error) {
+			return res.status(500).send({
+				error
+			});
+		}
+	})
+	.patch(authMiddleware, async (req, res) => {
+		const {
+			displayName
+		} = req.body;
+
+		try {
+			const user = await User.findById(req.user.id);
+			user.displayName = displayName;
+			await user.save();
+			res.status(200).send();
+		} catch(error) {
+			return res.status(500).send({
+				error
+			});
+		}
+	});
