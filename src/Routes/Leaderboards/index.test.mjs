@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import db_connected from  '../../db_test';
 
+import _ from 'lodash';
 import request from 'supertest';
 import mongoose from 'mongoose';
 import { app } from '../../app.mjs';
@@ -48,21 +49,58 @@ test('Get leaderboard', async () => {
 	const response = await agent
 		.get(`/leaderboards/${LEADERBOARD_NAME}`)
 		.expect(200);
-	expect(response.body).toBeInstanceOf(Array);
-	expect(response.body.length).toBe(1);
-	expect(response.body[0].score).toBe(1);
+
+	const leaderboard = response.body;
+	expect(leaderboard).toBeInstanceOf(Array);
+	expect(leaderboard.length).toBe(1);
+
+	const userScore = _.find(leaderboard, { username: USERNAME });
+	expect(userScore).toBeDefined();
+	expect(userScore.score).toBe(1);
 });
 
-test('Update score', async () => {
+test('Update higher score', async () => {
+	await agent
+		.post(`/leaderboards/${LEADERBOARD_NAME}`)
+		.send({
+			score: 2
+		})
+		.expect(200);
+		
+	const response = await agent
+		.get(`/leaderboards/${LEADERBOARD_NAME}`)
+		.expect(200);
+
+	const leaderboard = response.body;
+	expect(leaderboard).toBeInstanceOf(Array);
+	expect(leaderboard.length).toBe(1);
+
+	const userScore = _.find(leaderboard, { username: USERNAME });
+	expect(userScore).toBeDefined();
+	expect(userScore.score).toBe(2);
+});
+
+test('Update lower score', async () => {
 	await agent
 		.post(`/leaderboards/${LEADERBOARD_NAME}`)
 		.send({
 			score: 1
 		})
 		.expect(200);
+		
+	const response = await agent
+		.get(`/leaderboards/${LEADERBOARD_NAME}`)
+		.expect(200);
+
+	const leaderboard = response.body;
+	expect(leaderboard).toBeInstanceOf(Array);
+	expect(leaderboard.length).toBe(1);
+
+	const userScore = _.find(leaderboard, { username: USERNAME });
+	expect(userScore).toBeDefined();
+	expect(userScore.score).toBe(2);
 });
 
 afterAll(async () => {
-	await mongoose.connection.db.dropDatabase();
 	await mongoose.connection.close();
 });

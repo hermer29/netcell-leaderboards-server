@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const Score = new Schema({
 	user: {
 		type: Schema.Types.ObjectId,
-		ref: 'User'
+		ref: 'users'
 	},
 	leaderboard: String,
 	score: Number,
@@ -25,6 +25,26 @@ class ScoreClass {
 					score: {
 						$max: '$score'
 					},
+				}
+			},
+			{
+				$lookup: {
+					from: 'users',
+					localField: '_id',
+					foreignField: '_id',
+					as: 'user',
+				}
+			},
+			{
+				$project: {
+					'_id': 0,
+					'username': {
+						$arrayElemAt: ['$user.username', 0],
+					},
+					'displayName': {
+						$arrayElemAt: ['$user.displayName', 0],
+					},
+					'score': 1,
 				}
 			}
 		]);

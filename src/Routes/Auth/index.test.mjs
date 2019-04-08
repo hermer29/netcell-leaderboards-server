@@ -67,6 +67,5 @@ test('Prevent login wrong password', async () => {
 });
 
 afterAll(async () => {
-	await mongoose.connection.db.dropDatabase();
 	await mongoose.connection.close();
 });
