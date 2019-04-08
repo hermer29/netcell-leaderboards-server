@@ -53,6 +53,16 @@ class ScoreClass {
 			}
 		]);
 	}
+	static countUserAction(leaderboardName, userId, startTime = 0, endTime = Date.now()) {
+		return this.count({
+			leaderboard: leaderboardName,
+			user: new mongoose.Types.ObjectId(userId),
+			createdAt: {
+				$gt: new Date(startTime * 1),
+				$lt: new Date(endTime * 1),
+			}
+		});
+	}
 	static getUsers(leaderboardName, startTime = 0, endTime = Date.now()) {
 		return this.aggregate([
 			{
