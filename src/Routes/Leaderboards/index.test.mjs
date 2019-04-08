@@ -140,8 +140,29 @@ describe('Admin', () => {
 			.send()
 			.expect(200);
 		
-		const users = response.body;
-		expect(users).toHaveProperty('count', 3);
+		const result = response.body;
+		expect(result).toHaveProperty('count', 3);
+	});	
+
+	test('Delete user scores', async () => {
+		await agent
+			.delete(`/leaderboards/${LEADERBOARD_NAME}/users/${USERNAME}`)
+			.send()
+			.expect(200);
+		
+		const countResponse = await agent
+			.get(`/leaderboards/${LEADERBOARD_NAME}/userActions/${USERNAME}`)
+			.send();
+
+		expect(countResponse.body).toHaveProperty('count', 0);
+
+		const usersResponse = await agent
+			.get(`/leaderboards/${LEADERBOARD_NAME}/users`)
+			.send();
+		
+		const users = usersResponse.body;
+		expect(users).toBeInstanceOf(Array);
+		expect(users.length).toBe(0);
 	});	
 });
 
