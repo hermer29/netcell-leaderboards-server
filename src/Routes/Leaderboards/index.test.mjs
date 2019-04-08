@@ -141,7 +141,7 @@ describe('Admin', () => {
 			.expect(200);
 		
 		const users = response.body;
-		expect(users).toBeInstanceOf(Number);
+		expect(users).toHaveProperty('count', 3);
 	});	
 });
 
