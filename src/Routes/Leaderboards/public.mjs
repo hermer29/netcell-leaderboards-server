@@ -20,8 +20,14 @@ leaderboardsPublicRoute.route('/:leaderboardName')
 		const {
 			leaderboardName
 		} = req.params;
+		const {
+			page,
+			perPage,
+			startTime,
+			endTime,
+		} = req.query;
 		try {
-			const leaderboard = await Score.getLeaderboard(leaderboardName);
+			const leaderboard = await Score.getLeaderboard(leaderboardName, startTime, endTime, page, perPage);
 			res.status(200).send(leaderboard);
 		} catch(error) {
 			res.status(500).send({ error });
@@ -51,6 +57,7 @@ leaderboardsPublicRoute.route('/:leaderboardName')
 			});
 			res.status(200).send(result);
 		} catch(error) {
+			console.error(error)
 			res.status(500).send({ error });
 		}
 	});

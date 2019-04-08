@@ -16,11 +16,15 @@ const Score = new Schema({
 });
 
 class ScoreClass {
-	static getLeaderboard(leaderboardName) {
+	static getLeaderboard(leaderboardName, startTime = 0, endTime = Date.now(), skip = 0, limit = 10) {
 		return this.aggregate([
 			{
 				$match: {
-					leaderboard: leaderboardName
+					leaderboard: leaderboardName,
+					createdAt: {
+						$gt: new Date(startTime * 1),
+						$lt: new Date(endTime * 1),
+					}
 				}
 			},
 			{
@@ -38,6 +42,17 @@ class ScoreClass {
 					foreignField: '_id',
 					as: 'user',
 				}
+			},
+			{ 
+				$sort: {
+					score: -1,
+				}
+			},
+			{ 
+				$limit: (limit * 1)
+			},
+			{ 
+				$skip: (skip * 1) * (limit * 1)
 			},
 			{
 				$project: {
