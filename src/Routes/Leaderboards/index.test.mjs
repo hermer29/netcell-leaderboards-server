@@ -8,6 +8,9 @@ import { app } from '../../app.mjs';
 import { leaderboardsRoute } from './index.mjs';
 import { authRoute } from '../Auth/index.mjs';
 import { createAdminUser } from '../Auth/authMiddleware.mjs';
+import * as websocket from '../../websocket';
+
+jest.mock('../../websocket');
 
 app.use('/auth', authRoute);
 app.use('/leaderboards', leaderboardsRoute);
@@ -108,6 +111,12 @@ describe('Public API', () => {
 				score: 1
 			})
 			.expect(200);
+		expect(websocket.broadcast).toHaveBeenCalledWith(
+			expect.objectContaining({
+				score: 1,
+				username: USERNAME,
+			})
+		);
 	});
 	
 	test('Get leaderboard', async () => {

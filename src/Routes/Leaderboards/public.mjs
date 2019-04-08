@@ -1,6 +1,7 @@
 import express from 'express';
 import Score from '../../Models/Score.mjs';
 import { authMiddleware } from '../Auth/authMiddleware.mjs';
+import { broadcast } from '../../websocket';
 
 export const leaderboardsPublicRoute = express.Router();
 
@@ -40,6 +41,12 @@ leaderboardsPublicRoute.route('/:leaderboardName')
 			const result = await Score.create({
 				score,
 				user: user._id,
+				leaderboard: leaderboardName,
+			});
+			broadcast({
+				score,
+				username: user.username,
+				displayName: user.displayName,
 				leaderboard: leaderboardName,
 			});
 			res.status(200).send(result);
