@@ -1,5 +1,5 @@
 import 'dotenv/config.js';
-import connected from './db';
+import connected from './db.mjs';
 
 import { app } from './app';
 import { authRoute } from './Routes/Auth/index.mjs';
