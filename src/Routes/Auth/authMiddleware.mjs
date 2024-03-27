@@ -1,4 +1,4 @@
-import User from '../../Models/User';
+import User from '../../Models/User.mjs';
 
 export const authMiddleware = (req, res, next) => {
 	if (req.isAuthenticated()) {
