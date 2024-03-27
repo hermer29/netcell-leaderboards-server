@@ -1,7 +1,7 @@
 import 'dotenv/config.js';
 import connected from './db.mjs';
 
-import { app } from './app';
+import { app } from './app.mjs';
 import { authRoute } from './Routes/Auth/index.mjs';
 import { leaderboardsRoute } from './Routes/Leaderboards/index.mjs';
 import { createAdminUser } from './Routes/Auth/authMiddleware.mjs';
