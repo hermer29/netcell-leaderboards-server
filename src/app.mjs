@@ -3,7 +3,7 @@ import passport from 'passport';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import session from 'cookie-session';
-import User from './Models/User';
+import User from './Models/User.mjs';
 import cors from 'cors';
 
 passport.use(User.createStrategy());
