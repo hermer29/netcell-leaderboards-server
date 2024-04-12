@@ -1,7 +1,6 @@
 import express from 'express';
 import Prefs from '../../Models/Prefs.mjs';
 import { authMiddleware } from '../Auth/authMiddleware.mjs';
-import { broadcast } from '../../websocket.mjs';
 
 export const prefsPublicRoute = express.Router();
 
@@ -29,17 +28,22 @@ prefsPublicRoute.route('/')
 			user,
 		} = req;
 		try {
-			const result = await Prefs.create({
-				values: values,
-				user: user._id
-			});
-			broadcast({
-				score,
-				username: user.username,
-				displayName: user.displayName,
-				leaderboard: leaderboardName,
-			});
-			res.status(200).send(result);
+			var currentUserPrefsModel = {
+				values
+			}
+			Prefs.updateOne(
+				{
+					user: user._id
+				}, 
+				{
+					user: user._id, 
+					values
+				}, 
+				{
+					upsert: true
+				});
+
+			res.status(200).send(currentUserPrefsModel);
 		} catch(error) {
 			console.error(error)
 			res.status(500).send({ error });
