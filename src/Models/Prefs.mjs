@@ -12,13 +12,7 @@ const Prefs = new Schema({
 
 class PrefsClass {
     static getValues(userId) {
-        return this.aggregate([
-            {
-                $match: {
-                    user: new mongoose.Types.ObjectId(userId)
-                }
-            }
-        ])
+        return this.findOne({user: userId});
     }
 }
 
